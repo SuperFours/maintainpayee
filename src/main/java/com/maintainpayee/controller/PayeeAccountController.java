@@ -74,4 +74,20 @@ public class PayeeAccountController {
 		return new ResponseEntity<>(HttpStatus.OK);
 		
 	} 
+	
+	/**
+	 * @description this method is used to update the new payee in respective DB
+	 * @param PayeeRequestDto object set of input fields to update the payee
+	 * @return ResponseDto object contains response message and status
+	 */
+	@PutMapping("/{id}")
+	public ResponseEntity<ResponseDto> updatePayee(@RequestBody PayeeAccountRequestDto payeeRequestDto, @PathVariable Integer id) throws NotFoundException {
+
+		log.info("update payee");
+		ResponseDto responseDto = payeeAccountService.updatePayee(payeeRequestDto, id);
+		if (responseDto != null) {
+			responseDto.setStatusCode(HttpStatus.OK.value());
+		}
+		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+	}
 }

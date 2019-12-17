@@ -103,5 +103,36 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 			responseDto.setMessage(AppConstant.NO_ACCOUNT_FOUND);
 		}
 		return responseDto;
-}
+	}
+	
+	/**
+	 * @description this method is used to update the new payee in respective DB
+	 * @param PayeeAccountRequestDto object set of input fields, id integer to update payee
+	 * @return ResponseDto object contains response message and status
+	 */
+	@Override
+	public ResponseDto updatePayee(PayeeAccountRequestDto newPayee, Integer id) throws NotFoundException {
+
+		ResponseDto responseDto = new ResponseDto();
+		
+		Optional<Customer>  customerResponse = customerRepository.findById(newPayee.getCustomerId());
+		Optional<IfscCode>  ifscCodeResponse = ifscCodeRepository.findByCode(newPayee.getIfscCode());
+		
+		if(customerResponse.isPresent() && ifscCodeResponse.isPresent()) {
+			Optional<PayeeAccount> payeeAccountOptional = payeeAccountRepository.findById(id);
+			if(payeeAccountOptional.isPresent()) {	
+				PayeeAccount payeeAccount = payeeAccountOptional.get();
+				payeeAccount.setAccountNumber(newPayee.getAccountNumber());
+				payeeAccount.setIsFavorite(newPayee.getIsFavorite());
+				payeeAccount.setName(newPayee.getName());
+				payeeAccount.setNickName(newPayee.getNickName());
+				payeeAccountRepository.save(payeeAccount);
+				
+			}
+			
+		}else {
+			throw new NotFoundException(AppConstant.NO_RECORD_FOUND);
+		}
+		return responseDto;
+	}
 }
