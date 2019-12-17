@@ -1,6 +1,7 @@
 package com.maintainpayee.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -10,7 +11,12 @@ import org.springframework.stereotype.Service;
 import com.maintainpayee.constant.AppConstant;
 import com.maintainpayee.dto.FavouritePayeeAccountDto;
 import com.maintainpayee.dto.FavouritePayeeAccountResponseDto;
+import com.maintainpayee.dto.PayeeAccountRequestDto;
+import com.maintainpayee.dto.ResponseDto;
+import com.maintainpayee.entity.Customer;
+import com.maintainpayee.entity.IfscCode;
 import com.maintainpayee.entity.PayeeAccount;
+import com.maintainpayee.repository.CustomerRepository;
 import com.maintainpayee.repository.PayeeAccountRepository;
 
 @Service
@@ -45,6 +51,12 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 	
 	}
 	
+	
+	/**
+	 * @description this method is used to create the new payee in respective DB
+	 * @param PayeeAccountRequestDto object set of input fields to create payee
+	 * @return ResponseDto object contains response message and status
+	 */
 	@Override
 	public ResponseDto createPayee(PayeeAccountRequestDto payeeRequestDto) {
 

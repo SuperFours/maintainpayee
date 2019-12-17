@@ -5,11 +5,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.maintainpayee.dto.FavouritePayeeAccountResponseDto;
+import com.maintainpayee.dto.PayeeAccountRequestDto;
+import com.maintainpayee.dto.ResponseDto;
 import com.maintainpayee.service.PayeeAccountService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @description Payee Account Controller -> get the all favourite payee list,
@@ -22,6 +28,7 @@ import com.maintainpayee.service.PayeeAccountService;
 @RestController
 @RequestMapping("/payees")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
+@Slf4j
 public class PayeeAccountController {
 
 	@Autowired
