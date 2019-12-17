@@ -22,4 +22,6 @@ public class AppConstant {
 	public static final String LOGIN_ERROR_MESSAGE = "Login failed";
 
 	public static final String FAVOURITE="is-favourite";
+	
+	public static final String PAYEE_ALREADY_EXIST = "Payee is already exist";
 }
