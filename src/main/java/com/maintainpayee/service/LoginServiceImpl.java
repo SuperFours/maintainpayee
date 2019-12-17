@@ -41,7 +41,7 @@ public class LoginServiceImpl implements LoginService {
 	public LoginResponseDto login(LoginDto loginDto) {
 		logger.info("user login check....");
 		LoginResponseDto loginResponseDto = new LoginResponseDto();
-		User user = userRepository.findUserByUserNameAndPassword(loginDto.getUserName(), loginDto.getPassword());
+		Customer user = userRepository.findUserByUserNameAndPassword(loginDto.getUserName(), loginDto.getPassword());
 		if (user != null) {
 			logger.debug("user login check within the repository call....");
 			Optional<UserAccount> userAccount = userAccountRepository.findByUserIdAndAccountType(user.getId(),
