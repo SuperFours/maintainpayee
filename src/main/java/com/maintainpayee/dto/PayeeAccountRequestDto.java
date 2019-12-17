@@ -13,7 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class PayeeAccountRequestDto {
 
-	private Integer customerId;
+	private String customerId;
 	private String ifscCode;
 	private String accountNumber;
 	private String name;

@@ -29,6 +29,6 @@ public class IfscCode {
 	private String bankName;
 	private String branchName;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "ifscCode")
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "ifscCode", orphanRemoval = true)
 	private Set<PayeeAccount> payeeAccount;
 }

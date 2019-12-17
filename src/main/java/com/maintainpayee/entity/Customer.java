@@ -38,6 +38,6 @@ public class Customer {
 	private String phoneNumber;
 	private String password;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "customerId")
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "customerId", orphanRemoval = true)
 	private Set<PayeeAccount> payeeAccount;
 }
