@@ -33,5 +33,21 @@ public class PayeeAccountController {
 		favouritePayeeAccountResponse.setStatusCode(HttpStatus.OK.value());
 		return new ResponseEntity<>(favouritePayeeAccountResponse, HttpStatus.OK);
 	}
+	
+	/**
+	 * @description this method is used to create the new payee in respective DB
+	 * @param PayeeRequestDto object set of input fields to create payee
+	 * @return ResponseDto object contains response message and status
+	 */
+	@PostMapping("/accounts")
+	public ResponseEntity<ResponseDto> addPayee(@RequestBody PayeeAccountRequestDto payeeRequestDto) {
+
+		log.info("creating new payee");
+		ResponseDto responseDto = payeeAccountService.createPayee(payeeRequestDto);
+		if (responseDto != null) {
+			responseDto.setStatusCode(HttpStatus.OK.value());
+		}
+		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+	}
 
 }

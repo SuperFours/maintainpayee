@@ -8,5 +8,7 @@ import com.maintainpayee.entity.PayeeAccount;
 public interface PayeeAccountRepository extends JpaRepository<PayeeAccount, Integer> {
 	
 	PayeeAccount findPayeeAccountById(Integer id);
+	
+	Optional<PayeeAccount> findByAccountNumber(String accountNumber);
 
 }

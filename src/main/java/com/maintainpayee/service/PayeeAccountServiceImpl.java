@@ -19,6 +19,14 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 	@Autowired
 	PayeeAccountRepository payeeAccountRepository;
 
+	
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
+	IfscCodeRepository ifscCodeRepository;
+
+
 	@Override
 	public FavouritePayeeAccountResponseDto getAllFavouriteAccounts() {
 		FavouritePayeeAccountResponseDto response=new FavouritePayeeAccountResponseDto();
@@ -35,5 +43,36 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 		BeanUtils.copyProperties(payeeAccount, favouritePayeeAccountDto);
 		return favouritePayeeAccountDto;
 	
+	}
+	
+	@Override
+	public ResponseDto createPayee(PayeeAccountRequestDto payeeRequestDto) {
+
+		ResponseDto responseDto = new ResponseDto();
+
+		PayeeAccount payeeAccount = new PayeeAccount();
+
+		Optional<PayeeAccount> payeeAccountResponse = payeeAccountRepository
+				.findByAccountNumber(payeeRequestDto.getAccountNumber());
+		
+		Optional<Customer>  customerResponse = customerRepository.findById(payeeRequestDto.getCustomerId());
+		Optional<IfscCode>  ifscCodeResponse = ifscCodeRepository.findByCode(payeeRequestDto.getIfscCode());
+		
+		
+		if (!payeeAccountResponse.isPresent()) {
+			responseDto.setMessage(AppConstant.PAYEE_ALREADY_EXIST);
+		} else {
+			
+			payeeAccount.setCustomerId(customerResponse.get());
+			payeeAccount.setIfscCode(ifscCodeResponse.get());
+			
+			BeanUtils.copyProperties(payeeRequestDto, payeeAccount);
+
+			payeeAccountRepository.save(payeeAccount);
+
+			responseDto.setMessage(AppConstant.SUCCESS);
+		}
+
+		return responseDto;
 	}
 }
