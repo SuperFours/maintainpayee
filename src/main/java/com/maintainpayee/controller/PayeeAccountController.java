@@ -6,7 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,10 +39,15 @@ public class PayeeAccountController {
 	@Autowired
 	PayeeAccountService payeeAccountService;
 
-	@GetMapping
-	public ResponseEntity<FavouritePayeeAccountResponseDto> getAllFavPayees() {
-		FavouritePayeeAccountResponseDto favouritePayeeAccountResponse = payeeAccountService.getAllFavouriteAccounts();
-		favouritePayeeAccountResponse.setStatusCode(HttpStatus.OK.value());
+	@GetMapping("/{loginId}")
+	public ResponseEntity<FavouritePayeeAccountResponseDto> getAllFavPayees(@PathVariable String loginId) {
+		FavouritePayeeAccountResponseDto favouritePayeeAccountResponse = payeeAccountService
+				.getAllFavouriteAccounts(loginId);
+		if (favouritePayeeAccountResponse.getMessage().equals(AppConstant.SUCCESS)) {
+			favouritePayeeAccountResponse.setStatusCode(HttpStatus.OK.value());
+		} else {
+			favouritePayeeAccountResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+		}
 		return new ResponseEntity<>(favouritePayeeAccountResponse, HttpStatus.OK);
 	}
 

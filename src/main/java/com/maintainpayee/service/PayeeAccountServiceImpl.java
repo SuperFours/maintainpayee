@@ -35,13 +35,21 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 	IfscCodeRepository ifscCodeRepository;
 
 	@Override
-	public FavouritePayeeAccountResponseDto getAllFavouriteAccounts() {
+	public FavouritePayeeAccountResponseDto getAllFavouriteAccounts(String userId) {
 		FavouritePayeeAccountResponseDto response = new FavouritePayeeAccountResponseDto();
-		List<PayeeAccount> payees = payeeAccountRepository.findAll();
-		List<FavouritePayeeAccountDto> payeeAccountDto = payees.stream().map(this::convertEntityToDto)
-				.collect(Collectors.toList());
-		response.setPayees(payeeAccountDto);
-		response.setMessage(AppConstant.SUCCESS);
+		Optional<Customer> customer = customerRepository.findByPhoneNumber(userId);
+				
+		if(customer.isPresent()) {
+			List<PayeeAccount> payees = payeeAccountRepository.findByCustomerIdId(customer.get().getId());
+			List<FavouritePayeeAccountDto> payeeAccountDto = payees.stream().map(this::convertEntityToDto)
+					.collect(Collectors.toList());
+			response.setPayees(payeeAccountDto);
+			response.setMessage(AppConstant.SUCCESS);
+		}else {
+			response.setMessage(AppConstant.NO_CUSTOMERS_FOUND);
+
+		}
+		
 		return response;
 	}
 

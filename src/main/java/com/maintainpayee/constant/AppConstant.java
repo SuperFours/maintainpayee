@@ -28,5 +28,6 @@ public class AppConstant {
 	//delete 
 	public static final String DELETE_SUCCESS = "Payee Account Deleted Successfully";
 	public static final String NO_ACCOUNT_FOUND = "No Payee Records Found";
+	public static final String NO_CUSTOMERS_FOUND = "No Customers Found";
 	
 }

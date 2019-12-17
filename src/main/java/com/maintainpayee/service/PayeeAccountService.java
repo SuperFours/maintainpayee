@@ -8,7 +8,7 @@ import javassist.NotFoundException;
 
 public interface PayeeAccountService {
 	
-	public FavouritePayeeAccountResponseDto getAllFavouriteAccounts();
+	public FavouritePayeeAccountResponseDto getAllFavouriteAccounts(String customerId);
 	
 	public ResponseDto createPayee(PayeeAccountRequestDto payeeRequestDto) throws NotFoundException;
 
