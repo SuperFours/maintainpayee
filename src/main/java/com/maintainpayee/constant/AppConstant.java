@@ -21,4 +21,5 @@ public class AppConstant {
 	public static final String LOGIN_SUCCESS_MESSAGE = "Login Success";
 	public static final String LOGIN_ERROR_MESSAGE = "Login failed";
 
+	public static final String FAVOURITE="is-favourite";
 }
