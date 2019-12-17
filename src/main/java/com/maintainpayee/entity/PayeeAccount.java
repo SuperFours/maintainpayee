@@ -32,7 +32,7 @@ public class PayeeAccount {
 	private Customer customerId;
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "ifsc_code")
-	private IsfcCode ifscCode;
+	private IfscCode ifscCode;
 	private String accountNumber;
 	private String name;
 	private String nickName;

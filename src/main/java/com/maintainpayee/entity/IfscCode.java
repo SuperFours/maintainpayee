@@ -21,7 +21,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class IsfcCode {
+public class IfscCode {
 
 	private String code;
 	private String bankName;
