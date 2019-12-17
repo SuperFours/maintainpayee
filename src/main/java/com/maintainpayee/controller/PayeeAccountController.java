@@ -15,6 +15,7 @@ import com.maintainpayee.dto.PayeeAccountRequestDto;
 import com.maintainpayee.dto.ResponseDto;
 import com.maintainpayee.service.PayeeAccountService;
 
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -26,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @RestController
-@RequestMapping("/payees")
+@RequestMapping("/payee/accounts")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @Slf4j
 public class PayeeAccountController {
@@ -34,20 +35,22 @@ public class PayeeAccountController {
 	@Autowired
 	PayeeAccountService payeeAccountService;
 
-	@GetMapping("/{accountId}")
+	@GetMapping
 	public ResponseEntity<FavouritePayeeAccountResponseDto> getAllFavPayees() {
 		FavouritePayeeAccountResponseDto favouritePayeeAccountResponse = payeeAccountService.getAllFavouriteAccounts();
 		favouritePayeeAccountResponse.setStatusCode(HttpStatus.OK.value());
 		return new ResponseEntity<>(favouritePayeeAccountResponse, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * @description this method is used to create the new payee in respective DB
 	 * @param PayeeRequestDto object set of input fields to create payee
 	 * @return ResponseDto object contains response message and status
+	 * @throws NotFoundException
 	 */
 	@PostMapping("/accounts")
-	public ResponseEntity<ResponseDto> addPayee(@RequestBody PayeeAccountRequestDto payeeRequestDto) {
+	public ResponseEntity<ResponseDto> addPayee(@RequestBody PayeeAccountRequestDto payeeRequestDto)
+			throws NotFoundException {
 
 		log.info("creating new payee");
 		ResponseDto responseDto = payeeAccountService.createPayee(payeeRequestDto);
