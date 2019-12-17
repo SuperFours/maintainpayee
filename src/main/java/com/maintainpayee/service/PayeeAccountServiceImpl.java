@@ -89,4 +89,19 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 
 		return responseDto;
 	}
+	
+	
+	@Override
+	public ResponseDto deleteAccount(Integer id) {
+		ResponseDto responseDto = new ResponseDto();
+		PayeeAccount payeeAccount = payeeAccountRepository.findPayeeAccountById(id);
+		Optional<PayeeAccount> isPayeeAccount = Optional.ofNullable(payeeAccount);
+		if (isPayeeAccount.isPresent()) {
+			payeeAccountRepository.deleteById(id);
+			responseDto.setMessage(AppConstant.DELETE_SUCCESS);
+		} else {
+			responseDto.setMessage(AppConstant.NO_ACCOUNT_FOUND);
+		}
+		return responseDto;
+}
 }

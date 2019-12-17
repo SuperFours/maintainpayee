@@ -12,4 +12,6 @@ public interface PayeeAccountService {
 	
 	public ResponseDto createPayee(PayeeAccountRequestDto payeeRequestDto) throws NotFoundException;
 
+	ResponseDto deleteAccount(Integer id);
+
 }

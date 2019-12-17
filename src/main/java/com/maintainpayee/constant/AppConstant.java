@@ -24,4 +24,9 @@ public class AppConstant {
 	public static final String FAVOURITE="is-favourite";
 	
 	public static final String PAYEE_ALREADY_EXIST = "Payee is already exist";
+	
+	//delete 
+	public static final String DELETE_SUCCESS = "Payee Account Deleted Successfully";
+	public static final String NO_ACCOUNT_FOUND = "No Payee Records Found";
+	
 }

@@ -13,4 +13,5 @@ public interface PayeeAccountRepository extends JpaRepository<PayeeAccount, Inte
 	
 	Optional<PayeeAccount> findByAccountNumberAndCustomerIdId(String accountNumber, Integer customerId);
 
+	PayeeAccount deletePayeeAccountById(Integer id);
 }

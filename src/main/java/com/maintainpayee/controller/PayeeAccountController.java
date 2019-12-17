@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.maintainpayee.constant.AppConstant;
 import com.maintainpayee.dto.FavouritePayeeAccountResponseDto;
 import com.maintainpayee.dto.PayeeAccountRequestDto;
 import com.maintainpayee.dto.ResponseDto;
@@ -60,4 +62,16 @@ public class PayeeAccountController {
 		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 	}
 
+	@DeleteMapping("/accounts/{id}") 
+	public ResponseEntity<ResponseDto> deletePayee(Integer id){
+		ResponseDto response=payeeAccountService.deleteAccount(id);
+		if (response.getStatus().equals(AppConstant.DELETE_SUCCESS)) {
+			response.setStatusCode(HttpStatus.OK.value());
+		} else {
+			response.setStatusCode(HttpStatus.BAD_REQUEST.value());
+		}
+		
+		return new ResponseEntity<>(HttpStatus.OK);
+		
+	} 
 }
