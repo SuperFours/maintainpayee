@@ -70,6 +70,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 		fundTransferResponseDto.setMessage(ex.getMessage());
 		fundTransferResponseDto.setStatus(AppConstant.FAILURE);
 		fundTransferResponseDto.setStatusCode(HttpStatus.NOT_FOUND.value());
-		return new ResponseEntity<>(fundTransferResponseDto, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(fundTransferResponseDto, HttpStatus.OK);
 	}
 }

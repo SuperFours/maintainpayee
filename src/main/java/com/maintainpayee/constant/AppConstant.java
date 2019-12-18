@@ -17,6 +17,9 @@ public class AppConstant {
 	public static final String FAILURE = "FAILURE";
 	public static final String NO_RECORD_FOUND = "No Records Found";
 
+	//ErrorCodes
+	public static final Integer SUCCESS_CODE = 200;
+
 	
 	public static final String LOGIN_SUCCESS_MESSAGE = "Login Success";
 	public static final String LOGIN_ERROR_MESSAGE = "Login failed";
@@ -30,5 +33,12 @@ public class AppConstant {
 	public static final String DELETE_SUCCESS = "Payee Account Deleted Successfully";
 	public static final String NO_ACCOUNT_FOUND = "No Payee Records Found";
 	public static final String NO_CUSTOMERS_FOUND = "No Customers Found";
+	
+
+	public static final String NO_ACCOUNT_NUMBER_FOUND = "No Account Number Found";
+	
+	//Check account number
+	public static final String CHECK_ACCOUNT_NUMBER = "http://localhost:8080/retailbanking/users/accounts/search/";
+
 	
 }

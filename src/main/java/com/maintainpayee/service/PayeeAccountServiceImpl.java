@@ -6,13 +6,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.maintainpayee.constant.AppConstant;
 import com.maintainpayee.dto.FavouritePayeeAccountDto;
 import com.maintainpayee.dto.FavouritePayeeAccountResponseDto;
 import com.maintainpayee.dto.PayeeAccountRequestDto;
 import com.maintainpayee.dto.ResponseDto;
+import com.maintainpayee.dto.UserAccountResponseDto;
 import com.maintainpayee.dto.ViewPayeeDto;
 import com.maintainpayee.dto.ViewPayeeResponseDto;
 import com.maintainpayee.entity.Customer;
@@ -54,6 +57,12 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 		return response;
 	}
 
+	/**
+	 * convert the payeedto from payee entity values
+	 * 
+	 * @param payeeAccount entity for the purpose of convert values to dto.
+	 * @return favoritePayeeAccountDto return the dto response values.
+	 */
 	private FavouritePayeeAccountDto convertEntityToDto(PayeeAccount payeeAccount) {
 		FavouritePayeeAccountDto favouritePayeeAccountDto = new FavouritePayeeAccountDto();
 		BeanUtils.copyProperties(payeeAccount, favouritePayeeAccountDto);
@@ -83,14 +92,24 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 						payeeRequestDto.getAccountNumber(), customerResponse.get().getId());
 				if (!payeeAccountResponse.isPresent()) {
 
-					payeeAccount.setCustomerId(customerResponse.get());
-					payeeAccount.setIfscCode(ifscCodeResponse.get());
+					RestTemplate restTemplate = new RestTemplate();
+					String endPointUrl = AppConstant.CHECK_ACCOUNT_NUMBER + payeeRequestDto.getAccountNumber();
+					ResponseEntity<UserAccountResponseDto> getAccountNumber = restTemplate.getForEntity(endPointUrl,
+							UserAccountResponseDto.class);
+					UserAccountResponseDto restTemplateResponse = getAccountNumber.getBody();
+					if (restTemplateResponse.getStatusCode().equals(AppConstant.SUCCESS_CODE)) {
+						payeeAccount.setCustomerId(customerResponse.get());
+						payeeAccount.setIfscCode(ifscCodeResponse.get());
 
-					// Bean Util Conversion for Dto to entity
-					BeanUtils.copyProperties(payeeRequestDto, payeeAccount);
-					payeeAccount.setIsFavorite(false);
-					payeeAccountRepository.save(payeeAccount);
-					responseDto.setMessage(AppConstant.SUCCESS);
+						// Bean Util Conversion for Dto to entity
+						BeanUtils.copyProperties(payeeRequestDto, payeeAccount);
+						payeeAccount.setIsFavorite(false);
+						payeeAccountRepository.save(payeeAccount);
+						responseDto.setMessage(AppConstant.SUCCESS);
+					} else {
+						throw new NotFoundException(AppConstant.NO_ACCOUNT_NUMBER_FOUND);
+					}
+
 				} else {
 					responseDto.setMessage(AppConstant.PAYEE_ALREADY_EXIST);
 				}
@@ -136,13 +155,24 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 		if (customerResponse.isPresent() && ifscCodeResponse.isPresent()) {
 			Optional<PayeeAccount> payeeAccountOptional = payeeAccountRepository.findById(id);
 			if (payeeAccountOptional.isPresent()) {
-				PayeeAccount payeeAccount = payeeAccountOptional.get();
-				payeeAccount.setAccountNumber(newPayee.getAccountNumber());
-				payeeAccount.setIsFavorite(newPayee.getIsFavorite());
-				payeeAccount.setName(newPayee.getName());
-				payeeAccount.setNickName(newPayee.getNickName());
-				payeeAccountRepository.save(payeeAccount);
+				
+				RestTemplate restTemplate = new RestTemplate();
+				String endPointUrl = AppConstant.CHECK_ACCOUNT_NUMBER + newPayee.getAccountNumber();
+				ResponseEntity<UserAccountResponseDto> getAccountNumber = restTemplate.getForEntity(endPointUrl,
+						UserAccountResponseDto.class);
+				UserAccountResponseDto restTemplateResponse = getAccountNumber.getBody();
+				if (restTemplateResponse.getStatusCode().equals(AppConstant.SUCCESS_CODE)) {
+					PayeeAccount payeeAccount = payeeAccountOptional.get();
+					payeeAccount.setAccountNumber(newPayee.getAccountNumber());
+					payeeAccount.setIsFavorite(newPayee.getIsFavorite());
+					payeeAccount.setName(newPayee.getName());
+					payeeAccount.setNickName(newPayee.getNickName());
+					payeeAccountRepository.save(payeeAccount);
 
+				} else {
+					throw new NotFoundException(AppConstant.NO_ACCOUNT_NUMBER_FOUND);
+				}
+				
 			}
 
 		} else {
