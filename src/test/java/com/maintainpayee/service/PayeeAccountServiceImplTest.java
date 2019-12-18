@@ -3,6 +3,8 @@ package com.maintainpayee.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -10,10 +12,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.maintainpayee.constant.AppConstant;
+import com.maintainpayee.dto.FavouritePayeeAccountResponseDto;
 import com.maintainpayee.dto.PayeeAccountRequestDto;
 import com.maintainpayee.dto.ResponseDto;
 import com.maintainpayee.entity.Customer;
@@ -46,6 +50,7 @@ public class PayeeAccountServiceImplTest {
 	IfscCode ifscCode = new IfscCode();
 
 	PayeeAccount payeeAccount = new PayeeAccount();
+	FavouritePayeeAccountResponseDto response = new FavouritePayeeAccountResponseDto();
 
 	@Before
 	public void init() {
@@ -115,5 +120,54 @@ public class PayeeAccountServiceImplTest {
 		
 		ResponseDto responseDto = payeeAccountServiceImpl.updatePayee(payeeAccountRequestDto, 1);
 		assertEquals(AppConstant.PAYEE_UPDATED, responseDto.getMessage());
+	}
+	
+	@Test
+	public void testGetAllFavouriteAccounts() {
+		payeeAccount.setAccountNumber("ICICI1234");
+		ifscCode.setBankName("ICICI");
+		payeeAccount.setIfscCode(ifscCode);
+		List<PayeeAccount> payees=new ArrayList<>();
+		payees.add(payeeAccount);
+		
+        Mockito.when(customerRepository.findByPhoneNumber("Janani")).thenReturn(Optional.of(customer));
+        Mockito.when(payeeAccountRepository.findByCustomerIdId(1)).thenReturn(payees);
+        
+        response.setMessage(AppConstant.SUCCESS);
+        FavouritePayeeAccountResponseDto payeeAccountDto=payeeAccountServiceImpl.getAllFavouriteAccounts("Janani");
+        assertEquals(AppConstant.SUCCESS, payeeAccountDto.getMessage());
+	}
+	
+	@Test
+	public void testGetAllFavouriteAccountsnegative() {
+		payeeAccount.setAccountNumber("ICICI1234");
+		List<PayeeAccount> payees=new ArrayList<>();
+		payees.add(payeeAccount);
+		
+        Mockito.when(customerRepository.findByPhoneNumber("Janani")).thenReturn(Optional.of(customer));
+        Mockito.when(payeeAccountRepository.findByCustomerIdId(1)).thenReturn(payees);
+        
+        response.setMessage(AppConstant.SUCCESS);
+        FavouritePayeeAccountResponseDto payeeAccountDto=payeeAccountServiceImpl.getAllFavouriteAccounts(null);
+        assertEquals(AppConstant.NO_CUSTOMERS_FOUND, payeeAccountDto.getMessage());
+	}
+	
+	@Test
+	public void testDeleteAccount() {
+		ResponseDto response=new ResponseDto();
+		response.setMessage(AppConstant.DELETE_SUCCESS);
+		
+		Mockito.when(payeeAccountRepository.findPayeeAccountById(123)).thenReturn(payeeAccount);
+		ResponseDto responses=payeeAccountServiceImpl.deleteAccount(123);
+		assertEquals(AppConstant.DELETE_SUCCESS, responses.getMessage());
+	}
+	
+	@Test
+	public void testDeleteAccountNegative() {
+		response.setMessage(AppConstant.NO_ACCOUNT_FOUND);
+		
+		Mockito.when(payeeAccountRepository.findPayeeAccountById(123)).thenReturn(null);
+		ResponseDto responses=payeeAccountServiceImpl.deleteAccount(null);
+		assertEquals(AppConstant.NO_ACCOUNT_FOUND, responses.getMessage());
 	}
 }

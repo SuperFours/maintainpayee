@@ -43,5 +43,9 @@ public class AppConstant {
 	public static final String OPERATION_SUCCESS = "Operation Success";
 	public static final String PAYEE_UPDATED = "Beneficinary Updated Successfully";
 
+	//Validate Message
+	public static final String FIRST_NAME_MANDATORY = "FirstName is mandatory";
+	public static final String ACCOUNT_NUMBER_MANDATORY = "Account Number is mandatory";
+
 	
 }

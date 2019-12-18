@@ -1,5 +1,7 @@
 package com.maintainpayee.controller;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +92,7 @@ public class PayeeAccountController {
 	 * @throws NotFoundException
 	 */
 	@PostMapping
-	public ResponseEntity<ResponseDto> addPayee(@RequestBody PayeeAccountRequestDto payeeRequestDto)
+	public ResponseEntity<ResponseDto> addPayee(@Valid @RequestBody PayeeAccountRequestDto payeeRequestDto)
 			throws NotFoundException {
 		log.info("creating new payee");
 		ResponseDto responseDto = payeeAccountService.createPayee(payeeRequestDto);

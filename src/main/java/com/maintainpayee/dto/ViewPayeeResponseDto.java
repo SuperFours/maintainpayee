@@ -12,4 +12,6 @@ public class ViewPayeeResponseDto {
 	private Integer statusCode;
 	
 	private ViewPayeeDto payee;
+	
+	
 }
