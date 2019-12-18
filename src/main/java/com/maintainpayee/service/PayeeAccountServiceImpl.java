@@ -40,7 +40,6 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 	public FavouritePayeeAccountResponseDto getAllFavouriteAccounts(String userId) {
 		FavouritePayeeAccountResponseDto response = new FavouritePayeeAccountResponseDto();
 		Optional<Customer> customer = customerRepository.findByPhoneNumber(userId);
-
 		if (customer.isPresent()) {
 			List<PayeeAccount> payees = payeeAccountRepository.findByCustomerIdId(customer.get().getId());
 			List<FavouritePayeeAccountDto> payeeAccountDto = payees.stream().map(this::convertEntityToDto)
@@ -74,29 +73,35 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 	public ResponseDto createPayee(PayeeAccountRequestDto payeeRequestDto) throws NotFoundException {
 		ResponseDto responseDto = new ResponseDto();
 		PayeeAccount payeeAccount = new PayeeAccount();
-		Optional<Customer> customerResponse = customerRepository.findByPhoneNumber(payeeRequestDto.getCustomerId());
-		Optional<IfscCode> ifscCodeResponse = ifscCodeRepository.findByCode(payeeRequestDto.getIfscCode());
-		if (customerResponse.isPresent() && ifscCodeResponse.isPresent()) {
+		Integer payeeCount = payeeAccountRepository.getPayeeAccountCount(payeeRequestDto.getCustomerId());
+		if (payeeCount <= 10) {
+			Optional<Customer> customerResponse = customerRepository.findByPhoneNumber(payeeRequestDto.getCustomerId());
+			Optional<IfscCode> ifscCodeResponse = ifscCodeRepository.findByCode(payeeRequestDto.getIfscCode());
+			if (customerResponse.isPresent() && ifscCodeResponse.isPresent()) {
 
-			Optional<PayeeAccount> payeeAccountResponse = payeeAccountRepository.findByAccountNumberAndCustomerIdId(
-					payeeRequestDto.getAccountNumber(), customerResponse.get().getId());
-			if (!payeeAccountResponse.isPresent()) {
-				payeeAccount.setCustomerId(customerResponse.get());
-				payeeAccount.setIfscCode(ifscCodeResponse.get());
+				Optional<PayeeAccount> payeeAccountResponse = payeeAccountRepository.findByAccountNumberAndCustomerIdId(
+						payeeRequestDto.getAccountNumber(), customerResponse.get().getId());
+				if (!payeeAccountResponse.isPresent()) {
 
-				// Bean Util Conversion for Dto to entity
-				BeanUtils.copyProperties(payeeRequestDto, payeeAccount);
-				payeeAccount.setIsFavorite(false);
-				payeeAccountRepository.save(payeeAccount);
-				responseDto.setMessage(AppConstant.SUCCESS);
+					payeeAccount.setCustomerId(customerResponse.get());
+					payeeAccount.setIfscCode(ifscCodeResponse.get());
+
+					// Bean Util Conversion for Dto to entity
+					BeanUtils.copyProperties(payeeRequestDto, payeeAccount);
+					payeeAccount.setIsFavorite(false);
+					payeeAccountRepository.save(payeeAccount);
+					responseDto.setMessage(AppConstant.SUCCESS);
+				} else {
+					responseDto.setMessage(AppConstant.PAYEE_ALREADY_EXIST);
+				}
+
 			} else {
-				responseDto.setMessage(AppConstant.PAYEE_ALREADY_EXIST);
+				throw new NotFoundException(AppConstant.NO_RECORD_FOUND);
 			}
-
 		} else {
-			throw new NotFoundException(AppConstant.NO_RECORD_FOUND);
-		}
+			responseDto.setMessage(AppConstant.PAYEE_REACHED_MAXIMUM);
 
+		}
 		return responseDto;
 	}
 
@@ -154,13 +159,12 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 			ViewPayeeDto viewPayeeDto = new ViewPayeeDto();
 			viewPayeeDto.setAccountNumber(payeeAccount.get().getAccountNumber());
 			viewPayeeDto.setIfscCode(payeeAccount.get().getIfscCode().getCode());
-			viewPayeeDto.setName(payeeAccount.get().getName());
-			viewPayeeDto.setName(payeeAccount.get().getNickName());
+			viewPayeeDto.setNickName(payeeAccount.get().getNickName());
 			viewPayeeDto.setPayeeId(payeeAccount.get().getId());
-			viewPayeeDto.setIsFavorie(payeeAccount.get().getIsFavorite());
+			viewPayeeDto.setIsFavorite(payeeAccount.get().getIsFavorite());
 			responseDto.setPayee(viewPayeeDto);
 			responseDto.setMessage(AppConstant.SUCCESS);
-		}else {
+		} else {
 			responseDto.setMessage(AppConstant.NO_RECORD_FOUND);
 		}
 		return responseDto;

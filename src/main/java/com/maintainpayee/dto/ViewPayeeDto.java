@@ -8,10 +8,9 @@ import lombok.Setter;
 public class ViewPayeeDto {
 	
 	private Integer payeeId;
-	private String name;
 	private String nickName;
 	private String accountNumber;
 	private String ifscCode;
-	private Boolean isFavorie;
+	private Boolean isFavorite;
 
 }

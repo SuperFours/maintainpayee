@@ -23,7 +23,8 @@ public class AppConstant {
 
 	public static final String FAVOURITE="is-favourite";
 	
-	public static final String PAYEE_ALREADY_EXIST = "Payee is already exist";
+	public static final String PAYEE_ALREADY_EXIST = "Beneficinary already exists";
+	public static final String PAYEE_REACHED_MAXIMUM = "You can added maximum upto 10 favorite beneficinaries";
 	
 	//delete 
 	public static final String DELETE_SUCCESS = "Payee Account Deleted Successfully";
