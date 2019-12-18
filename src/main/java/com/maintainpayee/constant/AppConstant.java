@@ -39,6 +39,9 @@ public class AppConstant {
 	
 	//Check account number
 	public static final String CHECK_ACCOUNT_NUMBER = "http://localhost:8080/retailbanking/users/accounts/search/";
+	
+	public static final String OPERATION_SUCCESS = "Operation Success";
+	public static final String PAYEE_UPDATED = "Beneficinary Updated Successfully";
 
 	
 }

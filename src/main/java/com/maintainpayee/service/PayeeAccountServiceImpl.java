@@ -168,6 +168,9 @@ public class PayeeAccountServiceImpl implements PayeeAccountService {
 					payeeAccount.setName(newPayee.getName());
 					payeeAccount.setNickName(newPayee.getNickName());
 					payeeAccountRepository.save(payeeAccount);
+					
+					responseDto.setStatus(AppConstant.SUCCESS);
+					responseDto.setMessage(AppConstant.PAYEE_UPDATED);
 
 				} else {
 					throw new NotFoundException(AppConstant.NO_ACCOUNT_NUMBER_FOUND);
