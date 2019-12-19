@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,6 +23,7 @@ import com.maintainpayee.constant.AppConstant;
 import com.maintainpayee.dto.FavouritePayeeAccountResponseDto;
 import com.maintainpayee.dto.PayeeAccountRequestDto;
 import com.maintainpayee.dto.ResponseDto;
+import com.maintainpayee.dto.UserAccountResponseDto;
 import com.maintainpayee.dto.ViewPayeeResponseDto;
 import com.maintainpayee.entity.Customer;
 import com.maintainpayee.entity.IfscCode;
@@ -86,17 +89,60 @@ public class PayeeAccountServiceImplTest {
 	public void testCreatePayeePayeeAlreadyExist() throws NotFoundException {
 
 		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(1);
-
 		when(customerRepository.findByPhoneNumber(payeeAccountRequestDto.getCustomerId()))
 				.thenReturn(Optional.of(customer));
-
 		when(ifscCodeRepository.findByCode(payeeAccountRequestDto.getIfscCode())).thenReturn(Optional.of(ifscCode));
-
 		when(payeeAccountRepository.findByAccountNumberAndCustomerIdId(payeeAccountRequestDto.getAccountNumber(),
 				customer.getId())).thenReturn(Optional.of(payeeAccount));
-
 		ResponseDto responseDto = payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
 		assertEquals(AppConstant.PAYEE_ALREADY_EXIST, responseDto.getMessage());
+	}
+	
+	@Test(expected = NotFoundException.class)
+	public void testCreatePayeeForException() throws NotFoundException {
+		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(2);
+		when(customerRepository.findByPhoneNumber(payeeAccountRequestDto.getCustomerId()))
+				.thenReturn(Optional.of(customer));
+		when(ifscCodeRepository.findByCode(payeeAccountRequestDto.getIfscCode())).thenReturn(Optional.of(ifscCode));
+		when(payeeAccountRepository.findByAccountNumberAndCustomerIdId(payeeAccountRequestDto.getAccountNumber(), 2))
+				.thenReturn(Optional.of(payeeAccount));
+		payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
+	}
+
+	@Test(expected = NotFoundException.class)
+	public void testCreatePayeeForException1() throws NotFoundException {
+		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(2);
+		when(customerRepository.findByPhoneNumber(payeeAccountRequestDto.getCustomerId()))
+				.thenReturn(Optional.ofNullable(null));
+		when(ifscCodeRepository.findByCode(payeeAccountRequestDto.getIfscCode())).thenReturn(Optional.of(ifscCode));
+		payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
+	}
+	
+	@Test
+	public void testCreatePayee() throws NotFoundException {
+		UserAccountResponseDto responseDto = new UserAccountResponseDto();
+		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(1);
+		when(customerRepository.findByPhoneNumber(payeeAccountRequestDto.getCustomerId()))
+				.thenReturn(Optional.of(customer));
+		when(ifscCodeRepository.findByCode(payeeAccountRequestDto.getIfscCode())).thenReturn(Optional.of(ifscCode));
+		when(payeeAccountRepository.findByAccountNumberAndCustomerIdId(payeeAccountRequestDto.getAccountNumber(),
+				customer.getId())).thenReturn(Optional.of(payeeAccount));
+		
+		//Rest Template
+		String endPointUrl = AppConstant.CHECK_ACCOUNT_NUMBER + payeeAccountRequestDto.getAccountNumber();
+		responseDto.setStatusCode(HttpStatus.OK.value());
+		ResponseEntity<UserAccountResponseDto> responseEntity = new ResponseEntity<UserAccountResponseDto>(responseDto, HttpStatus.ACCEPTED);
+		when(restTemplate.getForEntity(endPointUrl, UserAccountResponseDto.class)).thenReturn(responseEntity);
+		
+		ResponseDto result = payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
+		assertEquals(AppConstant.SUCCESS, result.getMessage());
+	}
+
+	@Test
+	public void testCreatePayeeForCheckPayeeCount() throws NotFoundException {
+		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(11);
+		ResponseDto result = payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
+		assertEquals(AppConstant.PAYEE_REACHED_MAXIMUM, result.getMessage());
 	}
 
 	@Test
@@ -116,7 +162,7 @@ public class PayeeAccountServiceImplTest {
 	}
 
 	@Test
-	public void testGetAllFavouriteAccountsnegative() {
+	public void testGetAllFavouriteAccountsNegative() {
 		payeeAccount.setAccountNumber("ICICI1234");
 		List<PayeeAccount> payees = new ArrayList<>();
 		payees.add(payeeAccount);
@@ -147,33 +193,7 @@ public class PayeeAccountServiceImplTest {
 		ResponseDto responses = payeeAccountServiceImpl.deleteAccount(null);
 		assertEquals(AppConstant.NO_ACCOUNT_FOUND, responses.getMessage());
 	}
-
-	@Test(expected = NotFoundException.class)
-	public void testCreatePayeeForException() throws NotFoundException {
-		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(2);
-		when(customerRepository.findByPhoneNumber(payeeAccountRequestDto.getCustomerId()))
-				.thenReturn(Optional.of(customer));
-		when(ifscCodeRepository.findByCode(payeeAccountRequestDto.getIfscCode())).thenReturn(Optional.of(ifscCode));
-		when(payeeAccountRepository.findByAccountNumberAndCustomerIdId(payeeAccountRequestDto.getAccountNumber(), 2))
-				.thenReturn(Optional.of(payeeAccount));
-		payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
-	}
 	
-	@Test(expected = NotFoundException.class)
-	public void testCreatePayeeForException1() throws NotFoundException {
-		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(2);
-		when(customerRepository.findByPhoneNumber(payeeAccountRequestDto.getCustomerId()))
-				.thenReturn(Optional.ofNullable(null));
-		when(ifscCodeRepository.findByCode(payeeAccountRequestDto.getIfscCode())).thenReturn(Optional.of(ifscCode));
-		payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
-	}
-	
-	@Test
-	public void testCreatePayeeForCheckPayeeCount() throws NotFoundException {
-		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(11);
-		ResponseDto result = payeeAccountServiceImpl.createPayee(payeeAccountRequestDto);
-		assertEquals(AppConstant.PAYEE_REACHED_MAXIMUM, result.getMessage());
-	}
 
 	@Test(expected = NotFoundException.class)
 	public void testUpdatePayee() throws NotFoundException {
@@ -183,7 +203,7 @@ public class PayeeAccountServiceImplTest {
 		when(payeeAccountRepository.findById(1)).thenReturn(Optional.of(payeeAccount));
 		payeeAccountServiceImpl.updatePayee(payeeAccountRequestDto, 1);
 	}
-	
+
 	@Test(expected = NotFoundException.class)
 	public void testUpdatePayeeForException1() throws NotFoundException {
 		when(payeeAccountRepository.getPayeeAccountCount(payeeAccountRequestDto.getCustomerId())).thenReturn(2);
