@@ -47,15 +47,16 @@ public class PayeeAccountController {
 	PayeeAccountService payeeAccountService;
 
 	/**
-	 * get the favorite the payee accounts based on the customer login.
+	 * Get the favorite the payee accounts based on the customer login.
 	 * 
 	 * @param loginId user login id for the input purpose.
 	 * @return payeeAccountDto return the all payee account details based on the
 	 *         customer login.
+	 * @see return the all favorite accounts based on the customer.
 	 */
 	@GetMapping("/{loginId}/payees")
 	public ResponseEntity<FavouritePayeeAccountResponseDto> getAllFavPayees(@PathVariable String loginId) {
-		logger.info("get all the favorite payees...");
+		logger.info("get all the favorite payees...", loginId);
 		FavouritePayeeAccountResponseDto favouritePayeeAccountResponse = payeeAccountService
 				.getAllFavouriteAccounts(loginId);
 		if (favouritePayeeAccountResponse.getMessage().equals(AppConstant.SUCCESS)) {
@@ -67,14 +68,15 @@ public class PayeeAccountController {
 	}
 
 	/**
-	 * get the payee detail by id
+	 * Get the payee detail by payee id.
 	 * 
 	 * @param payeeId get the particular payee detail based on the payee account id.
 	 * @return view detail of the payee details via dto.
+	 * @see view the payee detail
 	 */
 	@GetMapping("/{payeeId}")
 	public ResponseEntity<ViewPayeeResponseDto> getPayeeDetail(@PathVariable Integer payeeId) {
-		logger.info("get payee detail...");
+		logger.info("get payee detail by id...", payeeId);
 		ViewPayeeResponseDto responseDto = payeeAccountService.getPayeeAccount(payeeId);
 		if (responseDto.getMessage().equals(AppConstant.SUCCESS)) {
 			responseDto.setStatusCode(HttpStatus.OK.value());
@@ -89,12 +91,13 @@ public class PayeeAccountController {
 	 * 
 	 * @param PayeeRequestDto object set of input fields to create payee
 	 * @return ResponseDto object contains response message and status
-	 * @throws NotFoundException
+	 * @throws NotFoundException if ifsc code and customer not in the database its
+	 *                           throws the notfoundexception
 	 */
 	@PostMapping
 	public ResponseEntity<ResponseDto> addPayee(@Valid @RequestBody PayeeAccountRequestDto payeeRequestDto)
 			throws NotFoundException {
-		log.info("creating new payee");
+		log.info("creating a new payee");
 		ResponseDto responseDto = payeeAccountService.createPayee(payeeRequestDto);
 		if (responseDto.getMessage().equals(AppConstant.SUCCESS)) {
 			responseDto.setStatusCode(HttpStatus.OK.value());
@@ -106,7 +109,7 @@ public class PayeeAccountController {
 	}
 
 	/**
-	 * delete the payee detail based on the id
+	 * Delete the payee detail based on the payee id
 	 * 
 	 * @param id pass the id value based on the user choosing the payee accont
 	 *           detail.
@@ -115,16 +118,14 @@ public class PayeeAccountController {
 	 */
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ResponseDto> deletePayee(@PathVariable Integer id) {
-		logger.info("delete the payee based on the id...");
+		logger.info("delete the payee based on the id...", id);
 		ResponseDto response = payeeAccountService.deleteAccount(id);
 		if (response.getMessage().equals(AppConstant.DELETE_SUCCESS)) {
 			response.setStatusCode(HttpStatus.OK.value());
 		} else {
 			response.setStatusCode(HttpStatus.BAD_REQUEST.value());
 		}
-
 		return new ResponseEntity<>(response, HttpStatus.OK);
-
 	}
 
 	/**
@@ -137,7 +138,7 @@ public class PayeeAccountController {
 	@PutMapping("/{id}")
 	public ResponseEntity<ResponseDto> updatePayee(@RequestBody PayeeAccountRequestDto payeeRequestDto,
 			@PathVariable Integer id) throws NotFoundException {
-		log.info("update the payee detail");
+		log.info("update the payee detail", id);
 		ResponseDto responseDto = payeeAccountService.updatePayee(payeeRequestDto, id);
 		if (responseDto != null) {
 			responseDto.setStatusCode(HttpStatus.OK.value());

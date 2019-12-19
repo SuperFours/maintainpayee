@@ -2,13 +2,14 @@ package com.maintainpayee.service;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.maintainpayee.constant.AppConstant;
-import com.maintainpayee.controller.IfscCodeController;
 import com.maintainpayee.dto.IfscCodeDto;
 import com.maintainpayee.dto.IfscCodeResponseDto;
 import com.maintainpayee.entity.IfscCode;
@@ -25,8 +26,9 @@ import com.maintainpayee.repository.IfscCodeRepository;
  *
  */
 @Service
+@Transactional
 public class IfscCodeServiceImpl implements IfscCodeService {
-	public static final Logger logger = LoggerFactory.getLogger(IfscCodeController.class);
+	public static final Logger logger = LoggerFactory.getLogger(IfscCodeServiceImpl.class);
 
 	@Autowired
 	IfscCodeRepository ifscCodeRepository;
@@ -42,7 +44,7 @@ public class IfscCodeServiceImpl implements IfscCodeService {
 	 */
 	@Override
 	public IfscCodeResponseDto getIfscCode(String code) {
-		logger.info("get the Ifsc code...");
+		logger.info("get the Ifsc code...", code);
 		IfscCodeResponseDto ifscCodeResponseDto = new IfscCodeResponseDto();
 		//Check the ifsc code is present or not.
 		Optional<IfscCode> ifscCode = ifscCodeRepository.findByCode(code);

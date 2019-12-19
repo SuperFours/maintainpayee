@@ -34,15 +34,15 @@ public class IfscCodeController {
 	IfscCodeService ifscCodeService;
 
 	/**
-	 * get the ifsc code detail based on the user enter the ifsc code.
+	 * Get the ifsc code detail based on the user enter the ifsc code.
 	 * 
 	 * @return IfscCodeResponseDto values we can set the detail of the ifsc code,
-	 *         bank name and branchName along with sucess message and status code.
+	 *         bank name and branchName along with success message and status code.
 	 * @see response of the ifsc details
 	 */
 	@GetMapping("/{code}")
 	public ResponseEntity<IfscCodeResponseDto> getIfscCode(@PathVariable String code) {
-		logger.info("Get ifsc code details...");
+		logger.info("Get ifsc code detail...", code);
 		IfscCodeResponseDto ifscCodeResponseDto = ifscCodeService.getIfscCode(code);
 		if (ifscCodeResponseDto.getMessage().equals(AppConstant.SUCCESS)) {
 			ifscCodeResponseDto.setStatusCode(HttpStatus.OK.value());
