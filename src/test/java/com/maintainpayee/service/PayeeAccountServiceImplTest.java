@@ -23,6 +23,7 @@ import com.maintainpayee.constant.AppConstant;
 import com.maintainpayee.dto.FavouritePayeeAccountResponseDto;
 import com.maintainpayee.dto.PayeeAccountRequestDto;
 import com.maintainpayee.dto.ResponseDto;
+import com.maintainpayee.dto.UserAccountDto;
 import com.maintainpayee.dto.UserAccountResponseDto;
 import com.maintainpayee.dto.ViewPayeeResponseDto;
 import com.maintainpayee.entity.Customer;
@@ -131,6 +132,12 @@ public class PayeeAccountServiceImplTest {
 		//Rest Template
 		String endPointUrl = AppConstant.CHECK_ACCOUNT_NUMBER + payeeAccountRequestDto.getAccountNumber();
 		responseDto.setStatusCode(HttpStatus.OK.value());
+		List<UserAccountDto> userAccounts = new ArrayList<>();
+		UserAccountDto userAccountDto = new UserAccountDto();
+		userAccountDto.setAccountNumber(8677774343434L);
+		userAccounts.add(userAccountDto);
+		
+		responseDto.setUserAccounts(userAccounts);
 		ResponseEntity<UserAccountResponseDto> responseEntity = new ResponseEntity<UserAccountResponseDto>(responseDto, HttpStatus.ACCEPTED);
 		when(restTemplate.getForEntity(endPointUrl, UserAccountResponseDto.class)).thenReturn(responseEntity);
 		
